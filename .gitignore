@@ -1,0 +1,26 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.sln.docstates
+
+# ASP.NET Core
+wwwroot/lib/
+appsettings.Development.json
+Properties/launchSettings.json
+
+# Certificates
+*.pfx
+*.key
+*.crt
+
+# Rider, VS Code
+.idea/
+.vscode/
+
+# Node/npm
+node_modules/
