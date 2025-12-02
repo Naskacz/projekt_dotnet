@@ -10,47 +10,8 @@ using Projekt_dotnet.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.UseUrls("https://localhost:5001");
 
 // Configure Kestrel to try to load certificate file from configuration/env and log on failure
-builder.WebHost.ConfigureKestrel(options =>
-{
-    var config = builder.Configuration;
-
-    var certPath = config["Kestrel:Certificates:Default:Path"]
-                   ?? Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path");
-    var certPassword = config["Kestrel:Certificates:Default:Password"]
-                       ?? Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Password");
-
-    if (!string.IsNullOrEmpty(certPath) && File.Exists(certPath))
-    {
-        try
-        {
-            var cert = new X509Certificate2(certPath, certPassword);
-            Console.WriteLine($"[Startup] Loaded certificate from {certPath}");
-            options.ListenAnyIP(5001, listenOptions =>
-            {
-                listenOptions.UseHttps(cert);
-            });
-            return;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Startup] Failed to load certificate at '{certPath}': {ex.Message}");
-            // fall through to default behavior below
-        }
-    }
-    else
-    {
-        Console.WriteLine($"[Startup] Certificate path not set or file missing: '{certPath}'");
-    }
-
-    // fallback: ask Kestrel to use HTTPS (it will use default store/dev cert)
-    options.ListenAnyIP(5001, listenOptions =>
-    {
-        listenOptions.UseHttps();
-    });
-});
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -61,6 +22,21 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddCors(options => 
+{
+    options.AddPolicy("AllowLocalFrontend", policy =>
+    {
+        policy.WithOrigins("https://localhost:5173")
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(8080); // HTTP na porcie 8080
+});
 
 var app = builder.Build();
 
@@ -76,9 +52,8 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
 app.UseRouting();
-
+app.UseCors("AllowLocalFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 

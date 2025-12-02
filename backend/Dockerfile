@@ -13,10 +13,3 @@ ENV ASPNETCORE_URLS=https://+:5001;http://+:5000
 ENTRYPOINT ["dotnet", "Projekt_dotnet.dll"]
 
 EXPOSE 5001
-
-# Skopiuj certyfikat do katalogu w kontenerze
-COPY certs/aspnetapp.pfx /root/.aspnet/https/aspnetapp.pfx
-
-# Ustaw zmienne środowiskowe dla Kestrel
-ENV ASPNETCORE_Kestrel__Certificates__Default__Path=/root/.aspnet/https/aspnetapp.pfx
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password=password

@@ -1,26 +1,19 @@
-# Build results
 bin/
 obj/
-
-# Visual Studio
 .vs/
 *.user
 *.suo
+*.userosscache
 *.sln.docstates
 
-# ASP.NET Core
-wwwroot/lib/
-appsettings.Development.json
-Properties/launchSettings.json
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# Certificates
-*.pfx
-*.key
-*.crt
-
-# Rider, VS Code
-.idea/
-.vscode/
-
-# Node/npm
-node_modules/
+*.DS_Store
+*.idea/
+*.vscode/
+.env
