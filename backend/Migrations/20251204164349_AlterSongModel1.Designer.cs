@@ -12,8 +12,8 @@ using Projekt_dotnet.Data;
 namespace Projekt_dotnet.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251202094010_initial")]
-    partial class initial
+    [Migration("20251204164349_AlterSongModel1")]
+    partial class AlterSongModel1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -307,6 +307,14 @@ namespace Projekt_dotnet.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Artist")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
