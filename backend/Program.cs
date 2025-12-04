@@ -7,10 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Projekt_dotnet.Data;
 using Projekt_dotnet.Models;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Env.Load();
 
+builder.Configuration["Supabase:Url"] = Environment.GetEnvironmentVariable("SUPABASE_URL");
+builder.Configuration["Supabase:ServiceKey"] = Environment.GetEnvironmentVariable("SUPABASE_SERVICE_KEY");
+builder.Configuration["Supabase:Bucket"] = Environment.GetEnvironmentVariable("SUPABASE_BUCKET");
+
+builder.Services.AddSingleton<SupabaseService>();
+
+    
 // Configure Kestrel to try to load certificate file from configuration/env and log on failure
 
 // Add services to the container.
@@ -39,6 +48,7 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

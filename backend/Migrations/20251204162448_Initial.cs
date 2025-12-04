@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Projekt_dotnet.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -75,6 +75,7 @@ namespace Projekt_dotnet.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Artist = table.Column<string>(type: "text", nullable: false),
+                    SongUrl = table.Column<string>(type: "text", nullable: false),
                     AlbumId = table.Column<int>(type: "integer", nullable: true),
                     Year = table.Column<int>(type: "integer", nullable: false),
                     Genre = table.Column<string>(type: "text", nullable: true)
