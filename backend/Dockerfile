@@ -1,15 +1,18 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+﻿# Używamy SDK, żeby działał dotnet watch
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS dev
 WORKDIR /app
-COPY *.csproj .
+
+# Kopiujemy tylko pliki projektu dla szybkiego restore
+COPY *.csproj ./
 RUN dotnet restore
-COPY . .
-RUN dotnet publish -c Release -o out
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
-WORKDIR /app
-COPY --from=build /app/out .
-# Certificate will be mounted at runtime via docker-compose volume
-ENV ASPNETCORE_URLS=https://+:5001;http://+:5000
-ENTRYPOINT ["dotnet", "Projekt_dotnet.dll"]
+# Kopiujemy resztę plików
+COPY . ./
 
-EXPOSE 5001
+# Ustawiamy port do developmentu
+ENV ASPNETCORE_URLS=http://+:8080
+
+# Domyślny punkt wejścia – dotnet watch
+CMD ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+
+EXPOSE 8080

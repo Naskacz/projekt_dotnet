@@ -7,6 +7,7 @@ namespace Projekt_dotnet.Models
         public int Id { get; set; }
         public string Title { get; set; } = null!;
         public string Artist { get; set; } = null!;
+        public string SongUrl { get; set; } = null!;
         public int? AlbumId { get; set; }
         public Album? Album { get; set; }
         public int Year { get; set; }
