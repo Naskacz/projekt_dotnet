@@ -30,27 +30,40 @@ public class SongsController : ControllerBase
     [HttpPost("upload")]
     [RequestSizeLimit(50_000_000)]
     public async Task<IActionResult> UploadSong([FromForm] UploadSongDto dto)
-{
-    if (dto.File == null || dto.File.Length == 0)
-        return BadRequest("No file uploaded.");
-
-    using var stream = dto.File.OpenReadStream();
-    var url = await _supabaseService.UploadSongAsync(stream, dto.File.FileName);
-
-    var song = new Song
     {
-        Title = dto.Title,
-        Artist = dto.Artist,
-        Year = dto.Year,
-        Genre = dto.Genre,
-        FileName = dto.File.FileName,
-        FileUrl = url,
-    };
-        _dbContext.Songs.Add(song);
-        await _dbContext.SaveChangesAsync();
+        if (dto.File == null || dto.File.Length == 0)
+            return BadRequest("No file uploaded.");
 
-        // 3️⃣ Zwrócenie URL do frontendu
-        return Ok(new { url, id = song.Id });
+        string? uploadedUrl = null;
+        string? uploadedPath = null;
+        Song? song = null;
+
+        using var transaction = await _dbContext.Database.BeginTransactionAsync();
+        try
+        {
+            using var stream = dto.File.OpenReadStream();
+            (uploadedUrl, uploadedPath) = await _supabaseService.UploadSongAsync(stream, dto.File.FileName);
+
+            song = new Song
+            {
+                Title = dto.Title,
+                Artist = dto.Artist,
+                Year = dto.Year,
+                Genre = dto.Genre,
+                FileName = dto.File.FileName,
+                FileUrl = uploadedUrl,
+            };
+                _dbContext.Songs.Add(song);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return Ok(new { uploadedUrl, id = song.Id });
+        }
+        catch(Exception)
+        {
+            await transaction.RollbackAsync();
+            if(uploadedPath != null) await _supabaseService.DeleteSongAsync(uploadedPath);
+            return StatusCode(500, "An error occurred while uploading the song.");
+        }
     }
 }
 
