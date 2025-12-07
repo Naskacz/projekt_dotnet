@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "axios": "^1.13.2",
+    "unplugin-vue-router": "^0.19.0",
     "vue": "^3.5.25",
     "vue-router": "^4.6.3"
   },
