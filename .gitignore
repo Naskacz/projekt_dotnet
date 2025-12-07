@@ -8,6 +8,7 @@ obj/
 
 frontend/node_modules/
 frontend/dist/
+frontend/package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
