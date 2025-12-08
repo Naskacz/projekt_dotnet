@@ -18,10 +18,14 @@ services:
       SUPABASE_URL: "${SUPABASE_URL}"
       SUPABASE_SERVICE_KEY: "${SUPABASE_SERVICE_KEY}"
       SUPABASE_BUCKET: "${SUPABASE_BUCKET}"
+      Jwt__Key: "${JWT_KEY:-Je3T7vlnzcZBVAkEuwu7RCl9RwB0IIBUV5BYLBSVQeQ=}"
+      Jwt__Issuer: "http://app:8080"
+      Jwt__Audience: "http://vue_frontend:5173"
     networks:
       - appnet
     volumes:
       - ./backend:/app
+    command: sh -c "rm -rf /app/obj /app/bin && dotnet watch run"
 
   db:
     image: postgres:16

@@ -30,9 +30,23 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/UploadSong': RouteRecordInfo<
-      '/UploadSong',
-      '/UploadSong',
+    '/login': RouteRecordInfo<
+      '/login',
+      '/login',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/register': RouteRecordInfo<
+      '/register',
+      '/register',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/uploadSong': RouteRecordInfo<
+      '/uploadSong',
+      '/uploadSong',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -56,9 +70,21 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/UploadSong.vue': {
+    'src/pages/login.vue': {
       routes:
-        | '/UploadSong'
+        | '/login'
+      views:
+        | never
+    }
+    'src/pages/register.vue': {
+      routes:
+        | '/register'
+      views:
+        | never
+    }
+    'src/pages/uploadSong.vue': {
+      routes:
+        | '/uploadSong'
       views:
         | never
     }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Projekt_dotnet.Models;
 using Projekt_dotnet.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -25,8 +27,7 @@ public class SongsController : ControllerBase
         public int Year { get; set; }
         public string Genre { get; set; }
     }
-
-
+    [Authorize]
     [HttpPost("upload")]
     [RequestSizeLimit(50_000_000)]
     public async Task<IActionResult> UploadSong([FromForm] UploadSongDto dto)
@@ -35,15 +36,13 @@ public class SongsController : ControllerBase
             return BadRequest("No file uploaded.");
 
         string? uploadedUrl = null;
-        string? uploadedPath = null;
         Song? song = null;
 
         using var transaction = await _dbContext.Database.BeginTransactionAsync();
         try
         {
             using var stream = dto.File.OpenReadStream();
-            (uploadedUrl, uploadedPath) = await _supabaseService.UploadSongAsync(stream, dto.File.FileName);
-
+            uploadedUrl = await _supabaseService.UploadSongAsync(stream, dto.File.FileName);
             song = new Song
             {
                 Title = dto.Title,
@@ -53,17 +52,22 @@ public class SongsController : ControllerBase
                 FileName = dto.File.FileName,
                 FileUrl = uploadedUrl,
             };
-                _dbContext.Songs.Add(song);
-                await _dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
-                return Ok(new { uploadedUrl, id = song.Id });
+            _dbContext.Songs.Add(song);
+            await _dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+            return Ok(new { uploadedUrl, id = song.Id });
         }
         catch(Exception)
         {
             await transaction.RollbackAsync();
-            if(uploadedPath != null) await _supabaseService.DeleteSongAsync(uploadedPath);
             return StatusCode(500, "An error occurred while uploading the song.");
         }
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetAllSongs()
+    {
+        var songs = await _dbContext.Songs.ToListAsync();
+        return Ok(songs);
     }
 }
 
