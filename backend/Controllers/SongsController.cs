@@ -21,11 +21,11 @@ public class SongsController : ControllerBase
     }
     public class UploadSongDto
     {
-        public IFormFile File { get; set; }
-        public string Title { get; set; }
-        public string Artist { get; set; }
-        public int Year { get; set; }
-        public string Genre { get; set; }
+        public required IFormFile File { get; set; }
+        public required string Title { get; set; }
+        public required string Artist { get; set; }
+        public required int Year { get; set; }
+        public required string Genre { get; set; }
     }
     [Authorize]
     [HttpPost("upload")]

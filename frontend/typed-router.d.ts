@@ -44,9 +44,9 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/uploadSong': RouteRecordInfo<
-      '/uploadSong',
-      '/uploadSong',
+    '/UploadSong': RouteRecordInfo<
+      '/UploadSong',
+      '/UploadSong',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -82,9 +82,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/uploadSong.vue': {
+    'src/pages/UploadSong.vue': {
       routes:
-        | '/uploadSong'
+        | '/UploadSong'
       views:
         | never
     }

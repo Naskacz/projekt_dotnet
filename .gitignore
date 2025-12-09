@@ -18,3 +18,5 @@ pnpm-debug.log*
 *.idea/
 *.vscode/
 .env
+
+backend/Migrations/*
