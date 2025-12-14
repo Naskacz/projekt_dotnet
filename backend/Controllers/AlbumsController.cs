@@ -1,67 +1,56 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Projekt_dotnet.Models;
-using Projekt_dotnet.Data;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Projekt_dotnet.Models.DTOs;
+using Projekt_dotnet.Services;
 
-[ApiController]
-[Route("api/[controller]")]
+namespace Projekt_dotnet.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AlbumsController : ControllerBase
+    {
+        private readonly IAlbumService _albumService;
 
-public class AlbumsController : ControllerBase {
-    private readonly SupabaseService _supabaseService;
+        public AlbumsController(IAlbumService albumService)
+        {
+            _albumService = albumService;
+        }
 
-    private readonly ApplicationDbContext _dbContext;
-    private readonly UserManager<IdentityUser> _userManager;
+        private string? GetUserId() =>
+            User.Claims.LastOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-    public AlbumsController(SupabaseService supabaseService, ApplicationDbContext dbContext, UserManager<IdentityUser> userManager) {
-        _dbContext = dbContext;
-        _userManager = userManager;
-        _supabaseService = supabaseService;
-    }
-    public class CreateAlbumDto {
-        public required string Name { get; set; }
-        public required string Artist { get; set; }
-        public required int ReleaseYear { get; set; }
-        public string? CoverUrl { get; set; }
-    }
-    public class AddSongToAlbumDto {
-        public required int SongId { get; set; }
-    }
-    private string? GetUserId() => User.Claims.LastOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-    [Authorize]
-    [HttpPost("create")]
-    public async Task<IActionResult> CreateAlbum([FromForm] CreateAlbumDto dto){
-        var userId = GetUserId();
-        if (string.IsNullOrEmpty(userId))
-            return Unauthorized("User not found.");
+        [Authorize]
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateAlbum([FromForm] CreateAlbumDto dto)
+        {
+            var userId = GetUserId();
+            var (success, album, error) = await _albumService.CreateAlbumAsync(dto, userId);
 
-        var userExists = await _dbContext.Users.AnyAsync(u => u.Id == userId);
-        if (!userExists)
-            return BadRequest("User ID from token does not exist in database");
+            if (!success)
+                return BadRequest(new { error });
 
-        var album = new Album {
-            Name = dto.Name,
-            Artist = dto.Artist,
-            ReleaseYear = dto.ReleaseYear,
-            CoverUrl = dto.CoverUrl,
-            CreatedById = userId
-        };
+            return Ok(new { id = album.Id, album.Name, album.ReleaseYear });
+        }
 
-        _dbContext.Albums.Add(album);
-        await _dbContext.SaveChangesAsync();
+        [HttpPost("albums")]
+        public async Task<IActionResult> GetAlbums()
+        {
+            var albums = await _albumService.GetAllAlbumsAsync();
+            return Ok(albums);
+        }
 
-        return Ok(album);
-    }
-    [HttpPost("albums")]
-    public async Task<IActionResult> GetAlbums() {
-        var albums = await _dbContext.Albums
-            .Include(a => a.Songs)
-            .ToListAsync();
-        return Ok(albums);
+        [Authorize]
+        [HttpDelete("{albumId}")]
+        public async Task<IActionResult> DeleteAlbum(int albumId)
+        {
+            var userId = GetUserId();
+            var (success, error) = await _albumService.DeleteAlbumAsync(albumId, userId);
+
+            if (!success)
+                return BadRequest(new { error });
+
+            return NoContent();
+        }
     }
 }

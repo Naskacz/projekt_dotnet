@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using Projekt_dotnet.Data;
 using Projekt_dotnet.Models;
+using Projekt_dotnet.Services;
 using DotNetEnv;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -21,6 +22,9 @@ builder.Configuration["Supabase:ServiceKey"] = Environment.GetEnvironmentVariabl
 builder.Configuration["Supabase:Bucket"] = Environment.GetEnvironmentVariable("SUPABASE_BUCKET");
 
 builder.Services.AddSingleton<SupabaseService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISongService, SongService>();
+builder.Services.AddScoped<IAlbumService, AlbumService>();
 
     
 // Configure Kestrel to try to load certificate file from configuration/env and log on failure
@@ -31,8 +35,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddCors(options => 
@@ -70,8 +72,13 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddIdentityCore<IdentityUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services
+    .AddIdentityCore<IdentityUser>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+    })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddSignInManager();
 
 var app = builder.Build();
 
@@ -99,8 +106,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
-app.MapRazorPages()
-   .WithStaticAssets();
 
 app.Run();
