@@ -18,7 +18,7 @@ namespace Projekt_dotnet.Models
         public required int Year { get; set; }
         [Range(0, 2100, ErrorMessage = "Year must be valid")]
         public string? Genre { get; set; }
-        public string? CreatedById { get; set; }
+        public required string CreatedById { get; set; } = null!;
         public IdentityUser? CreatedBy { get; set; }
         // Navigation property for many-to-many relationship with Playlist
         public ICollection<PlaylistSong> PlaylistSongs{ get; set; } = new List<PlaylistSong>();

@@ -7,6 +7,7 @@ using Projekt_dotnet.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -44,7 +45,17 @@ public class SongsController : ControllerBase
         using var transaction = await _dbContext.Database.BeginTransactionAsync();
         try
         {
-            string userId = User.Identity?.Name ?? throw new Exception("User not found");
+            var userId = User.Claims.LastOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId)) 
+                return Unauthorized("User not found.");
+
+            var userExists = await _dbContext.Users.AnyAsync(u => u.Id == userId);
+            
+            if (!userExists)
+            {
+                return BadRequest("User ID from token does not exist in database");
+            }
+
             using var stream = dto.File.OpenReadStream();
             uploadedUrl = await _supabaseService.UploadSongAsync(stream, dto.File.FileName);
             if (string.IsNullOrWhiteSpace(uploadedUrl))
@@ -60,23 +71,37 @@ public class SongsController : ControllerBase
                 Genre = dto.Genre,
                 FileName = dto.File.FileName,
                 FileUrl = uploadedUrl,
-                CreatedById = string.IsNullOrEmpty(userId) ? null : userId
+                CreatedById = userId
             };
             _dbContext.Songs.Add(song);
             await _dbContext.SaveChangesAsync();
             await transaction.CommitAsync();
             return Ok(new { uploadedUrl, id = song.Id });
         }
-        catch(Exception)
+        catch(Exception ex)
         {
             await transaction.RollbackAsync();
-            return StatusCode(500, "An error occurred while uploading the song.");
+            Console.WriteLine($"ERROR: {ex.Message}");
+            Console.WriteLine($"INNER: {ex.InnerException?.Message}");
+            return StatusCode(500, new { error = ex.Message, inner = ex.InnerException?.Message });
         }
     }
     [HttpGet]
     public async Task<IActionResult> GetAllSongs()
     {
-        var songs = await _dbContext.Songs.ToListAsync();
+        var songs = await _dbContext.Songs
+        .Include(s => s.CreatedBy)
+        .Select(s => new 
+        {
+            s.Id,
+            s.Title,
+            s.Artist,
+            s.Year,
+            s.Genre,
+            s.FileUrl,
+            CreatedBy = s.CreatedBy != null ? s.CreatedBy.UserName : "Unknown"
+        })
+        .ToListAsync();
         return Ok(songs);
     }
 }

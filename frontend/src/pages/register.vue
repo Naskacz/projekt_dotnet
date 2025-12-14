@@ -16,13 +16,30 @@
             required
           />
         </div>
-        
+        <div class ="form-group">
+          <label for="username">Nazwa użytkownika</label>
+          <input
+            type="text"
+            id="username"
+            v-model="username"
+            required
+          />
+        </div>
         <div class="form-group">
           <label for="password">Hasło</label>
           <input
             type="password"
             id="password"
             v-model="password"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Potwierdź hasło</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            v-model="confirmPassword"
             required
           />
         </div>
@@ -47,6 +64,8 @@ import axios from 'axios';
 const router = useRouter();
 const email = ref('');
 const password = ref('');
+const username = ref('');
+const confirmPassword = ref('');
 const loading = ref(false);
 const error = ref('');
 const success = ref('');
@@ -59,7 +78,9 @@ async function handleRegister() {
   try {
     await axios.post('/api/auth/register', {
       email: email.value,
-      password: password.value
+      password: password.value,
+      confirmPassword: confirmPassword.value,
+      userName: username.value
     });
     
     success.value = 'Rejestracja udana! Przekierowanie...';

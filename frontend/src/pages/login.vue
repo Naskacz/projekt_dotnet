@@ -64,16 +64,22 @@ async function handleLogin() {
       password: password.value
     });
     
-    // Zapisz token w localStorage
+    console.log('=== LOGIN RESPONSE ===', response.data);
+    console.log('=== TOKEN ===', response.data.token);
+    
+    // Wyczyść stary token
+    localStorage.clear();
+    
+    // Zapisz nowy token
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('userEmail', response.data.email);
     
+    console.log('=== SAVED TOKEN ===', localStorage.getItem('token'));
+    
     success.value = 'Zalogowano pomyślnie!';
     
-    // Ustaw token w axios dla przyszłych requestów
     axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
     
-    // Przekieruj do strony głównej
     setTimeout(() => {
       router.push('/');
     }, 1000);

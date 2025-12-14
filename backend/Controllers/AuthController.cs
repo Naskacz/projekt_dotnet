@@ -23,7 +23,9 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
-        var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
+        var user = new IdentityUser { UserName = dto.UserName, Email = dto.Email };
+        if (dto.Password != dto.ConfirmPassword)
+            return BadRequest(new { message = "Passwords do not match" });
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         if (result.Succeeded)
@@ -47,11 +49,13 @@ public class AuthController : ControllerBase
 
     private string GenerateJwtToken(IdentityUser user)
     {
+        
         var claims = new[]
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
+            new Claim(ClaimTypes.NameIdentifier, user.Id),  // MUSI BYĆ user.Id
+            new Claim(ClaimTypes.Email, user.Email)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -73,6 +77,8 @@ public class RegisterDto
 {
     public required string Email { get; set; }
     public required string Password { get; set; }
+    public required string ConfirmPassword { get; set; }
+    public required string UserName { get; set; }
 }
 
 public class LoginDto

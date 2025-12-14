@@ -10,7 +10,8 @@ namespace Projekt_dotnet.Models
         public required string Artist { get; set; } = null!;
         public required int ReleaseYear { get; set; }
         public string? CoverUrl { get; set; }
-        public IdentityUser? createdBy { get; set; }
+        public required string CreatedById { get; set; } = null!;
+        public IdentityUser? CreatedBy { get; set; }
         public ICollection<Song> Songs { get; set; } = new List<Song>();
     }
 }

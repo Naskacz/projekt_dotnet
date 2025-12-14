@@ -233,6 +233,10 @@ namespace Projekt_dotnet.Migrations
                     b.Property<string>("CoverUrl")
                         .HasColumnType("text");
 
+                    b.Property<string>("CreatedById")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -240,12 +244,9 @@ namespace Projekt_dotnet.Migrations
                     b.Property<int>("ReleaseYear")
                         .HasColumnType("integer");
 
-                    b.Property<string>("createdById")
-                        .HasColumnType("text");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("createdById");
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Albums");
                 });
@@ -316,6 +317,7 @@ namespace Projekt_dotnet.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedById")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FileName")
@@ -398,11 +400,13 @@ namespace Projekt_dotnet.Migrations
 
             modelBuilder.Entity("Projekt_dotnet.Models.Album", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "createdBy")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("createdById");
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("createdBy");
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Projekt_dotnet.Models.Playlist", b =>
@@ -441,7 +445,9 @@ namespace Projekt_dotnet.Migrations
 
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedById");
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Album");
 

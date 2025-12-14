@@ -9,6 +9,7 @@
                     <th>Artysta</th>
                     <th>Rok</th>
                     <th>Gatunek</th>
+                    <th>Dodane przez</th>
                     <th>Plik</th>
                 </tr>
             </thead>
@@ -18,6 +19,7 @@
                     <td>{{ song.artist }}</td>
                     <td>{{ song.year }}</td>
                     <td>{{ song.genre }}</td>
+                    <td>{{ song.createdBy }}</td>
                     <td>
                         <audio :src="song.fileUrl" controls></audio>
                     </td>
@@ -25,11 +27,13 @@
             </tbody>
         </table>
     </section>
+    <p> <router-link to="/uploadSong">Prześlij nowy utwór</router-link> </p>
 </template>
 
 <script setup>
     import axios from 'axios';
     import { ref, onMounted } from 'vue';
+    import { useRouter } from 'vue-router';
     const songs = ref([]);
     async function fetchSongs() {
         try {

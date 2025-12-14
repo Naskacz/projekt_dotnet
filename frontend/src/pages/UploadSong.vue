@@ -12,7 +12,7 @@
     </label>
     <label>
       Year
-      <input v-model="year" type="text" />
+      <input v-model="year" type="number" min="0" max="2100" />
     </label>
     <label>
       Genre
@@ -68,7 +68,12 @@ async function submit() {
   fd.append('genre', genre.value)
 
   try {
-    const res = await axios.post('/api/songs/upload', fd)
+    const token = localStorage.getItem('token')
+    const res = await axios.post('/api/songs/upload', fd, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
     message.value = (res.data && res.data.message) ? res.data.message : `OK (${res.status})`
   } catch (err: any) {
     if (err.response) {
@@ -92,7 +97,7 @@ label {
   display: block;
   margin-bottom: 0.5rem;
 }
-input[type="text"] {
+input {
   width: 100%;
   padding: 0.4rem;
   margin-top: 0.25rem;
