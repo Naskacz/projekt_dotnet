@@ -38,13 +38,14 @@ const genre = ref('');
 const message = ref('');
 
 async function submit(){
+  console.log('Submitting album:', name.value, artist.value, year.value, genre.value);
     try {
         message.value = '';
 
         const formData = new FormData();
         formData.append('name', name.value);
         formData.append('artist', artist.value);
-        formData.append('year', year.value);
+        formData.append('releaseyear', year.value);
         formData.append('genre', genre.value);
         const token = localStorage.getItem('token')
         const response = await axios.post('/api/albums/create', formData, {
