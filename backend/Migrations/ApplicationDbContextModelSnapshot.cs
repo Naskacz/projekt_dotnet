@@ -240,7 +240,12 @@ namespace Projekt_dotnet.Migrations
                     b.Property<int>("ReleaseYear")
                         .HasColumnType("integer");
 
+                    b.Property<string>("createdById")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("createdById");
 
                     b.ToTable("Albums");
                 });
@@ -267,9 +272,12 @@ namespace Projekt_dotnet.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("createdById")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("createdById");
 
                     b.ToTable("Playlists");
                 });
@@ -307,6 +315,9 @@ namespace Projekt_dotnet.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("text");
+
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -328,6 +339,8 @@ namespace Projekt_dotnet.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AlbumId");
+
+                    b.HasIndex("CreatedById");
 
                     b.ToTable("Songs");
                 });
@@ -383,15 +396,22 @@ namespace Projekt_dotnet.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Projekt_dotnet.Models.Album", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "createdBy")
+                        .WithMany()
+                        .HasForeignKey("createdById");
+
+                    b.Navigation("createdBy");
+                });
+
             modelBuilder.Entity("Projekt_dotnet.Models.Playlist", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "createdBy")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("createdById");
 
-                    b.Navigation("User");
+                    b.Navigation("createdBy");
                 });
 
             modelBuilder.Entity("Projekt_dotnet.Models.PlaylistSong", b =>
@@ -419,7 +439,13 @@ namespace Projekt_dotnet.Migrations
                         .WithMany("Songs")
                         .HasForeignKey("AlbumId");
 
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
                     b.Navigation("Album");
+
+                    b.Navigation("CreatedBy");
                 });
 
             modelBuilder.Entity("Projekt_dotnet.Models.Album", b =>

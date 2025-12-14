@@ -6,6 +6,7 @@ using Projekt_dotnet.Models;
 using Projekt_dotnet.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -13,11 +14,13 @@ public class SongsController : ControllerBase
 {
     private readonly SupabaseService _supabaseService;
     private readonly ApplicationDbContext _dbContext;
+    private readonly UserManager<IdentityUser> _userManager;
 
-    public SongsController(SupabaseService supabaseService, ApplicationDbContext dbContext)
+    public SongsController(SupabaseService supabaseService, ApplicationDbContext dbContext, UserManager<IdentityUser> userManager)
     {
         _supabaseService = supabaseService;
         _dbContext = dbContext;
+        _userManager = userManager;
     }
     public class UploadSongDto
     {
@@ -41,8 +44,14 @@ public class SongsController : ControllerBase
         using var transaction = await _dbContext.Database.BeginTransactionAsync();
         try
         {
+            string userId = User.Identity?.Name ?? throw new Exception("User not found");
             using var stream = dto.File.OpenReadStream();
             uploadedUrl = await _supabaseService.UploadSongAsync(stream, dto.File.FileName);
+            if (string.IsNullOrWhiteSpace(uploadedUrl))
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, "File upload failed.");
+            }
             song = new Song
             {
                 Title = dto.Title,
@@ -51,6 +60,7 @@ public class SongsController : ControllerBase
                 Genre = dto.Genre,
                 FileName = dto.File.FileName,
                 FileUrl = uploadedUrl,
+                CreatedById = string.IsNullOrEmpty(userId) ? null : userId
             };
             _dbContext.Songs.Add(song);
             await _dbContext.SaveChangesAsync();
