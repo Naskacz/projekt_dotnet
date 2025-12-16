@@ -65,8 +65,7 @@ async function fetchAlbums() {
   loading.value = true
   error.value = ''
   try {
-    // Backend ma [HttpPost("albums")] → /api/albums/albums
-    const res = await axios.post('/api/albums/albums')
+    const res = await axios.get('/api/albums') 
     albums.value = res.data
   } catch (e) {
     error.value = e.response?.data?.message || e.message || 'Błąd pobierania albumów'

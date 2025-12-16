@@ -35,6 +35,13 @@ declare module 'vue-router/auto-routes' {
       '/albums',
       Record<never, never>,
       Record<never, never>,
+      | '/albums/[id]'
+    >,
+    '/albums/[id]': RouteRecordInfo<
+      '/albums/[id]',
+      '/albums/:id',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
       | never
     >,
     '/createAlbum': RouteRecordInfo<
@@ -87,6 +94,13 @@ declare module 'vue-router/auto-routes' {
     'src/pages/albums.vue': {
       routes:
         | '/albums'
+        | '/albums/[id]'
+      views:
+        | 'default'
+    }
+    'src/pages/albums/[id].vue': {
+      routes:
+        | '/albums/[id]'
       views:
         | never
     }

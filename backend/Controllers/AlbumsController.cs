@@ -33,11 +33,19 @@ namespace Projekt_dotnet.Controllers
             return Ok(new { id = album.Id, album.Name, album.ReleaseYear });
         }
 
-        [HttpPost("albums")]
+        [HttpGet] 
         public async Task<IActionResult> GetAlbums()
         {
             var albums = await _albumService.GetAllAlbumsAsync();
             return Ok(albums);
+        }
+
+        [HttpGet("{albumId:int}")] 
+        public async Task<IActionResult> GetAlbum(int albumId)
+        {
+            var album = await _albumService.GetAlbumByIdAsync(albumId);
+            if (album == null) return NotFound();
+            return Ok(album);
         }
 
         [Authorize]

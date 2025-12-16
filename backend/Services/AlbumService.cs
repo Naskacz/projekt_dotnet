@@ -10,6 +10,7 @@ namespace Projekt_dotnet.Services
         Task<(bool Success, Album? Album, string? Error)> CreateAlbumAsync(CreateAlbumDto dto, string userId);
         Task<List<dynamic>> GetAllAlbumsAsync();
         Task<(bool Success, string? Error)> DeleteAlbumAsync(int albumId, string userId);
+        Task<Album?> GetAlbumByIdAsync(int albumId);
     }
 
     public class AlbumService : IAlbumService
@@ -104,6 +105,12 @@ namespace Projekt_dotnet.Services
             {
                 return (false, ex.Message);
             }
+        }
+        public async Task<Album?> GetAlbumByIdAsync(int albumId)
+        {
+            return await _dbContext.Albums
+                .Include(a => a.Songs)
+                .FirstOrDefaultAsync(a => a.Id == albumId);
         }
     }
 }

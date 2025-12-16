@@ -26,7 +26,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ISongService, SongService>();
 builder.Services.AddScoped<IAlbumService, AlbumService>();
 
-    
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 // Configure Kestrel to try to load certificate file from configuration/env and log on failure
 
 // Add services to the container.
@@ -97,6 +99,13 @@ else
 
 app.UseRouting();
 app.UseCors("AllowLocalFrontend");
+
+if(app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -106,5 +115,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
+app.MapControllers();
 app.Run();
