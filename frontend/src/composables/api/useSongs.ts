@@ -46,7 +46,12 @@ export function useMySongs() {
     loading.value = true
     error.value = ''
     try {
-      const res = await axios.get('/api/songs/my')
+      const token = localStorage.getItem('token') || ''
+      const res = await axios.get('/api/songs/my', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       songs.value = res.data
     } catch (e: any) {
       error.value = e.response?.data?.message || 'Błąd pobierania twoich utworów'
@@ -55,9 +60,14 @@ export function useMySongs() {
     }
   }
 
-  async function create(formData: FormData) {
+  async function upload(formData: FormData) {
     try {
-      const res = await axios.post('/api/songs/create', formData)
+      const token = localStorage.getItem('token') || '' 
+      const res = await axios.post('/api/songs/upload', formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
       return res.data
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Błąd tworzenia utworu'
@@ -67,13 +77,30 @@ export function useMySongs() {
 
   async function delete_(id: number | string) {
     try {
-      await axios.delete(`/api/songs/${id}`)
+      const token = localStorage.getItem('token') || ''
+      await axios.delete(`/api/songs/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       songs.value = songs.value.filter(s => s.id !== id)
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Błąd usuwania utworu'
       throw e
     }
   }
-
-  return { songs, loading, error, fetch, create, delete: delete_ }
+  async function addToAlbum(songId: number, albumId: number) {
+    try {
+      const token = localStorage.getItem('token') || ''
+      await axios.post(`/api/songs/${songId}/add-to-album`, { albumId }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+    } catch (e: any) {
+      error.value = e.response?.data?.error || 'Błąd dodawania utworu do albumu'
+      throw e
+    }     
+  }
+  return { songs, loading, error, fetch, upload, delete: delete_, addToAlbum }
 }

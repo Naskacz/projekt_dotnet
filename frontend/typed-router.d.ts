@@ -89,16 +89,16 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/songs/create': RouteRecordInfo<
-      '/songs/create',
-      '/songs/create',
+    '/songs/my': RouteRecordInfo<
+      '/songs/my',
+      '/songs/my',
       Record<never, never>,
       Record<never, never>,
       | never
     >,
-    '/songs/my': RouteRecordInfo<
-      '/songs/my',
-      '/songs/my',
+    '/songs/upload': RouteRecordInfo<
+      '/songs/upload',
+      '/songs/upload',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -174,15 +174,15 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/songs/create.vue': {
-      routes:
-        | '/songs/create'
-      views:
-        | never
-    }
     'src/pages/songs/my.vue': {
       routes:
         | '/songs/my'
+      views:
+        | never
+    }
+    'src/pages/songs/upload.vue': {
+      routes:
+        | '/songs/upload'
       views:
         | never
     }

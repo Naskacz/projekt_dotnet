@@ -31,16 +31,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
+import { useMySongs } from '@/composables/api/useSongs'
 
 const file = ref<File | null>(null)
 const title = ref('')
 const artist = ref('')
 const year = ref('')
 const genre = ref('')
-const loading = ref(false)
 const message = ref('')
 const isError = ref(false)
+
+const { upload, loading, error } = useMySongs()
 
 function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
@@ -56,7 +57,6 @@ async function submit() {
     return
   }
 
-  loading.value = true
   message.value = ''
   isError.value = false
 
@@ -68,22 +68,12 @@ async function submit() {
   fd.append('genre', genre.value)
 
   try {
-    const token = localStorage.getItem('token')
-    const res = await axios.post('/api/songs/upload', fd, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-    message.value = (res.data && res.data.message) ? res.data.message : `OK (${res.status})`
-  } catch (err: any) {
-    if (err.response) {
-      message.value = `Błąd ${err.response.status}: ${err.response.data || err.response.statusText}`
-    } else {
-      message.value = `Błąd: ${err.message || 'sieć'}`
-    }
+    await upload(fd)
+    message.value = 'Przesłano'
+    isError.value = false
+  } catch (e: any) {
+    message.value = error.value || e.message || 'Błąd'
     isError.value = true
-  } finally {
-    loading.value = false
   }
 }
 </script>

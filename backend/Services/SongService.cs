@@ -10,6 +10,8 @@ namespace Projekt_dotnet.Services
     {
         Task<(bool Success, Song? Song, string? Error)> UploadSongAsync(CreateSongDto dto, string userId, SupabaseService supabaseService);
         Task<List<dynamic>> GetAllSongsAsync();
+        Task<List<Song>> GetSongsByUserAsync(string userId);
+        Task<(bool Success, string? Error)> AddSongToAlbumAsync(int songId, int albumId, string userId);
     }
 
     public class SongService : ISongService
@@ -80,6 +82,37 @@ namespace Projekt_dotnet.Services
                 .ToListAsync();
 
             return songs.Cast<dynamic>().ToList();
+        }
+        public async Task<List<Song>> GetSongsByUserAsync(string userId)
+        {
+            return await _dbContext.Songs
+                .Where(s => s.CreatedById == userId)
+                .ToListAsync();
+        }
+        public async Task<(bool Success, string? Error)> AddSongToAlbumAsync(int songId, int albumId, string userId)
+        {
+            var song = await _dbContext.Songs.FindAsync(songId);
+            if (song == null)
+                return (false, "Song not found");
+
+            var album = await _dbContext.Albums.FindAsync(albumId);
+            if (album == null)
+                return (false, "Album not found");
+
+            if (album.CreatedById != userId)
+                return (false, "You do not have permission to modify this album");
+
+            song.AlbumId = albumId;
+
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, ex.InnerException?.Message ?? ex.Message);
+            }
         }
     }
 }

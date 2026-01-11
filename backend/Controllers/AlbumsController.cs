@@ -1,6 +1,8 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Projekt_dotnet.Data;
 using Projekt_dotnet.Models.DTOs;
 using Projekt_dotnet.Services;
 
@@ -10,10 +12,12 @@ namespace Projekt_dotnet.Controllers
     [Route("api/[controller]")]
     public class AlbumsController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
         private readonly IAlbumService _albumService;
 
-        public AlbumsController(IAlbumService albumService)
+        public AlbumsController(ApplicationDbContext context, IAlbumService albumService)
         {
+            _context = context;
             _albumService = albumService;
         }
 
@@ -48,12 +52,37 @@ namespace Projekt_dotnet.Controllers
             return Ok(albums);
         }
         
-        [HttpGet("{albumId:int}")] 
-        public async Task<IActionResult> GetAlbum(int albumId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAlbum(int id)
         {
-            var album = await _albumService.GetAlbumByIdAsync(albumId);
-            if (album == null) return NotFound();
-            return Ok(album);
+            var album = await _context.Albums
+                .Include(a => a.Songs)
+                .Include(a => a.CreatedBy) 
+                .FirstOrDefaultAsync(a => a.Id == id);
+            
+            if (album == null)
+                return NotFound();
+            
+            var dto = new AlbumDetailDto
+            {
+                Id = album.Id,
+                Name = album.Name,
+                Artist = album.Artist,
+                ReleaseYear = album.ReleaseYear,
+                CoverUrl = album.CoverUrl,
+                CreatedBy = album.CreatedBy?.UserName ?? "Nieznany",  
+                Songs = album.Songs.Select(s => new SongDto
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    Artist = s.Artist,
+                    Year = s.Year,
+                    Genre = s.Genre,
+                    FileUrl = s.FileUrl
+                }).ToList()
+            };
+            
+            return Ok(dto);
         }
 
         [Authorize]

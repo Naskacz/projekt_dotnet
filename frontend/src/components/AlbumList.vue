@@ -22,11 +22,6 @@
             <button @click="$emit('delete', album.id)" class="btn-delete">Usuń</button>
           </td>
         </tr>
-        <tr v-if="album.songs?.length">
-          <td colspan="5">
-            <SongTable :songs="album.songs" />
-          </td>
-        </tr>
       </template>
     </tbody>
   </table>

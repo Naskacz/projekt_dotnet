@@ -46,7 +46,12 @@ export function useMyAlbums() {
     loading.value = true
     error.value = ''
     try {
-      const res = await axios.get('/api/albums/my')
+      const token = localStorage.getItem('token') || ''
+      const res = await axios.get('/api/albums/my', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       albums.value = res.data
     } catch (e: any) {
       error.value = e.response?.data?.message || 'Błąd pobierania twoich albumów'
@@ -57,7 +62,12 @@ export function useMyAlbums() {
 
   async function create(formData: FormData) {
     try {
-      const res = await axios.post('/api/albums/create', formData)
+      const token = localStorage.getItem('token') || ''
+      const res = await axios.post('/api/albums/create', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       return res.data
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Błąd tworzenia albumu'
@@ -67,7 +77,12 @@ export function useMyAlbums() {
 
   async function delete_(id: number | string) {
     try {
-      await axios.delete(`/api/albums/${id}`)
+      const token = localStorage.getItem('token') || ''
+      await axios.delete(`/api/albums/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
       albums.value = albums.value.filter(a => a.id !== id)
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Błąd usuwania albumu'

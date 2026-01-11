@@ -15,26 +15,11 @@
 
       <h3>Utwory ({{ album.songs?.length || 0 }})</h3>
       <table v-if="album.songs?.length" class="songs">
-        <thead>
-          <tr>
-            <th>Tytuł</th>
-            <th>Artysta</th>
-            <th>Rok</th>
-            <th>Gatunek</th>
-            <th>Odsłuch</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="song in album.songs" :key="song.id">
-            <td>{{ song.title }}</td>
-            <td>{{ song.artist }}</td>
-            <td>{{ song.year }}</td>
-            <td>{{ song.genre }}</td>
-            <td>
-              <audio v-if="song.fileUrl" :src="song.fileUrl" controls style="width:160px" />
-            </td>
-          </tr>
-        </tbody>
+        <SongTable 
+        v-if="album.songs.length" 
+        :songs="album.songs"
+        show-delete
+      />
       </table>
       <p v-else>Brak utworów w tym albumie.</p>
     </div>
@@ -44,28 +29,28 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import axios from 'axios'
-
+import { useAlbums } from '@/composables/api/useAlbums'
+import SongTable from '@/components/SongTable.vue'
 const route = useRoute()
 const album = ref<any>(null)
 const loading = ref(false)
 const error = ref('')
 
-async function fetchAlbum() {
+const { fetchOne } = useAlbums()
+
+
+onMounted(async () => {
   loading.value = true
   error.value = ''
   try {
-    const id = route.params.id  
-    const res = await axios.get(`/api/albums/${id}`)
-    album.value = res.data
+    const id = route.params.id as string
+    album.value = await fetchOne(id)
   } catch (e: any) {
     error.value = e.response?.data?.error || 'Błąd pobierania albumu'
   } finally {
     loading.value = false
   }
-}
-
-onMounted(fetchAlbum)
+})
 </script>
 
 <style scoped>

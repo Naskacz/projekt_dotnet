@@ -38,12 +38,34 @@ namespace Projekt_dotnet.Controllers
 
             return Ok(new { uploadedUrl = song.FileUrl, id = song.Id });
         }
-    
+        [Authorize]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMySongs()
+        {
+            var userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            var songs = await _songService.GetSongsByUserAsync(userId);
+            return Ok(songs);
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllSongs()
         {
             var songs = await _songService.GetAllSongsAsync();
             return Ok(songs);
+        }
+        [Authorize]
+        [HttpPost("{songId}/add-to-album")]
+        public async Task<IActionResult> AddSongToAlbum(int songId, [FromBody] AddToAlbumDto dto)
+        {
+            var userId = GetUserId();
+            var (success, error) = await _songService.AddSongToAlbumAsync(songId, dto.AlbumId, userId);
+    
+            if (!success)
+                return BadRequest(new { error });
+    
+            return Ok(new { message = "Utwór dodany do albumu" });
         }
     }
 }

@@ -7,28 +7,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { onMounted } from 'vue'
 import AlbumList from '@/components/AlbumList.vue'
+import { useAlbums } from '@/composables/api/useAlbums'
 
-const albums = ref([])
-const loading = ref(false)
-const error = ref('')
 
-async function fetchAlbums() {
-  loading.value = true
-  error.value = ''
-  try {
-    const res = await axios.get('/api/albums') 
-    albums.value = res.data
-  } catch (e) {
-    error.value = e.response?.data?.message || e.message || 'Błąd pobierania albumów'
-  } finally {
-    loading.value = false
-  }
-}
+const { albums, loading, error, fetchAll } = useAlbums()
 
-onMounted(fetchAlbums)
+onMounted(fetchAll)
 </script>
 
 <style scoped>

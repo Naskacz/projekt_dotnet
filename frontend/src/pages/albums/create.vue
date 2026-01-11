@@ -38,7 +38,6 @@ const genre = ref('');
 const message = ref('');
 
 async function submit(){
-  console.log('Submitting album:', name.value, artist.value, year.value, genre.value);
     try {
         message.value = '';
 
