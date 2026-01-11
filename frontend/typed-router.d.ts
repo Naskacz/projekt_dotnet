@@ -35,7 +35,17 @@ declare module 'vue-router/auto-routes' {
       '/albums',
       Record<never, never>,
       Record<never, never>,
+      | '/albums/'
       | '/albums/[id]'
+      | '/albums/create'
+      | '/albums/my'
+    >,
+    '/albums/': RouteRecordInfo<
+      '/albums/',
+      '/albums',
+      Record<never, never>,
+      Record<never, never>,
+      | never
     >,
     '/albums/[id]': RouteRecordInfo<
       '/albums/[id]',
@@ -44,9 +54,16 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
-    '/createAlbum': RouteRecordInfo<
-      '/createAlbum',
-      '/createAlbum',
+    '/albums/create': RouteRecordInfo<
+      '/albums/create',
+      '/albums/create',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/albums/my': RouteRecordInfo<
+      '/albums/my',
+      '/albums/my',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -65,9 +82,23 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/uploadSong': RouteRecordInfo<
-      '/uploadSong',
-      '/uploadSong',
+    '/songs/': RouteRecordInfo<
+      '/songs/',
+      '/songs',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/songs/create': RouteRecordInfo<
+      '/songs/create',
+      '/songs/create',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/songs/my': RouteRecordInfo<
+      '/songs/my',
+      '/songs/my',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -94,9 +125,18 @@ declare module 'vue-router/auto-routes' {
     'src/pages/albums.vue': {
       routes:
         | '/albums'
+        | '/albums/'
         | '/albums/[id]'
+        | '/albums/create'
+        | '/albums/my'
       views:
         | 'default'
+    }
+    'src/pages/albums/index.vue': {
+      routes:
+        | '/albums/'
+      views:
+        | never
     }
     'src/pages/albums/[id].vue': {
       routes:
@@ -104,9 +144,15 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/createAlbum.vue': {
+    'src/pages/albums/create.vue': {
       routes:
-        | '/createAlbum'
+        | '/albums/create'
+      views:
+        | never
+    }
+    'src/pages/albums/my.vue': {
+      routes:
+        | '/albums/my'
       views:
         | never
     }
@@ -122,9 +168,21 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/uploadSong.vue': {
+    'src/pages/songs/index.vue': {
       routes:
-        | '/uploadSong'
+        | '/songs/'
+      views:
+        | never
+    }
+    'src/pages/songs/create.vue': {
+      routes:
+        | '/songs/create'
+      views:
+        | never
+    }
+    'src/pages/songs/my.vue': {
+      routes:
+        | '/songs/my'
       views:
         | never
     }

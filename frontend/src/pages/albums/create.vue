@@ -65,16 +65,16 @@ async function submit(){
   max-width: 480px;
   margin: 1rem auto;
 }
-label {
+.create label {
   display: block;
   margin-bottom: 0.5rem;
 }
-input {
+.create input {
   width: 100%;
   padding: 0.4rem;
   margin-top: 0.25rem;
 }
-button {
+.create button {
   margin-top: 0.5rem;
 }
 .error {

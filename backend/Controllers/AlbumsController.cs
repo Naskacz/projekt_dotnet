@@ -18,7 +18,7 @@ namespace Projekt_dotnet.Controllers
         }
 
         private string? GetUserId() =>
-            User.Claims.LastOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).Select(c=>c.Value).LastOrDefault();
 
         [Authorize]
         [HttpPost("create")]
@@ -32,6 +32,14 @@ namespace Projekt_dotnet.Controllers
 
             return Ok(new { id = album.Id, album.Name, album.ReleaseYear });
         }
+        [Authorize]
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyAlbums()
+        {
+            var userId = GetUserId();
+            var albums = await _albumService.GetAlbumsByUserIdAsync(userId);
+            return Ok(albums);
+        }
 
         [HttpGet] 
         public async Task<IActionResult> GetAlbums()
@@ -39,7 +47,7 @@ namespace Projekt_dotnet.Controllers
             var albums = await _albumService.GetAllAlbumsAsync();
             return Ok(albums);
         }
-
+        
         [HttpGet("{albumId:int}")] 
         public async Task<IActionResult> GetAlbum(int albumId)
         {

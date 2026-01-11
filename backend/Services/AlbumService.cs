@@ -9,6 +9,7 @@ namespace Projekt_dotnet.Services
     {
         Task<(bool Success, Album? Album, string? Error)> CreateAlbumAsync(CreateAlbumDto dto, string userId);
         Task<List<dynamic>> GetAllAlbumsAsync();
+        Task<List<dynamic>> GetAlbumsByUserIdAsync(string userId);
         Task<(bool Success, string? Error)> DeleteAlbumAsync(int albumId, string userId);
         Task<Album?> GetAlbumByIdAsync(int albumId);
     }
@@ -80,6 +81,35 @@ namespace Projekt_dotnet.Services
             return albums.Cast<dynamic>().ToList();
         }
 
+        public async Task<List<dynamic>> GetAlbumsByUserIdAsync(string userId)
+        {
+            var albums = await _dbContext.Albums
+                .Where(a => a.CreatedById == userId)
+                .Include(a => a.CreatedBy)
+                .Include(a => a.Songs)
+                .Select(a => new
+                {
+                    a.Id,
+                    a.Name,
+                    a.Artist,
+                    a.ReleaseYear,
+                    a.CoverUrl,
+                    CreatedBy = a.CreatedBy != null ? a.CreatedBy.Email : "Unknown",
+                    Songs = a.Songs.Select(s => new
+                    {
+                        s.Id,
+                        s.Title,
+                        s.Artist,
+                        s.Year,
+                        s.Genre,
+                        s.FileUrl
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return albums.Cast<dynamic>().ToList();
+        }
+
         public async Task<(bool Success, string? Error)> DeleteAlbumAsync(int albumId, string userId)
         {
             var album = await _dbContext.Albums
@@ -106,6 +136,7 @@ namespace Projekt_dotnet.Services
                 return (false, ex.Message);
             }
         }
+
         public async Task<Album?> GetAlbumByIdAsync(int albumId)
         {
             return await _dbContext.Albums

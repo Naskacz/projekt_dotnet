@@ -55,8 +55,7 @@ async function fetchAlbum() {
   loading.value = true
   error.value = ''
   try {
-    const id = route.params.albumId  // lub route.params.id jeśli plik to [id].vue
-    console.log('Album ID from route:', id)  // DEBUG
+    const id = route.params.id  
     const res = await axios.get(`/api/albums/${id}`)
     album.value = res.data
   } catch (e: any) {
@@ -71,10 +70,4 @@ onMounted(fetchAlbum)
 
 <style scoped>
 .album { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
-.meta { display:flex; gap:1rem; flex-wrap:wrap; color:#555; }
-.cover img { max-width: 240px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); margin: 1rem 0; }
-.songs { width:100%; border-collapse: collapse; margin-top: 1rem; background:#fff; }
-.songs th, .songs td { padding: 0.75rem; border-bottom: 1px solid #e0e0e0; text-align:left; }
-.songs thead { background:#2c3e50; color:#fff; }
-.error { color:#c00; background:#fee; padding:0.75rem; border-radius:6px; }
 </style>

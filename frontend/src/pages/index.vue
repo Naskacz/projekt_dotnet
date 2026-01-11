@@ -27,7 +27,7 @@
             </tbody>
         </table>
     </section>
-    <p> <router-link to="/uploadSong">Prześlij nowy utwór</router-link> </p>
+    <p> <router-link to="/songs/create">Prześlij nowy utwór</router-link> </p>
 </template>
 
 <script setup>
