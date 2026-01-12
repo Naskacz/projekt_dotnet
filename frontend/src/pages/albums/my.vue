@@ -8,6 +8,7 @@
     @delete="handleDelete"
     />
     <p v-else>Brak albumów.</p>
+    <p> <router-link class="router-link" to="/albums/create">Utwórz nowy album</router-link> </p>     
   </section>
 </template>
 
@@ -33,4 +34,13 @@ async function handleDelete(id) {
 
 <style scoped>
 .albums { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+.router-link {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+}
+.router-link:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
 </style>

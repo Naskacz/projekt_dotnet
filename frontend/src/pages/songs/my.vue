@@ -31,6 +31,7 @@
       @close="closePlaylistModal"
       @add="handleAddToPlaylist"
     />
+    <p> <router-link class="router-link" to="/songs/upload">Prześlij nowy utwór</router-link> </p>
   </section>
 </template>
 
@@ -136,4 +137,13 @@ async function handleDelete(id: number | string) {
 
 <style scoped>
 .songs { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+.router-link {
+  color: #667eea;
+  font-weight: 600;
+  text-decoration: none;
+}
+.router-link:hover {
+  color: #4f46e5;
+  text-decoration: underline;
+}
 </style>
