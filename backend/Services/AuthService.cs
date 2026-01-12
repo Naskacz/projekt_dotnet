@@ -11,6 +11,7 @@ namespace Projekt_dotnet.Services
     {
         Task<(bool Success, string? Token, string? Error)> RegisterAsync(RegisterDto dto);
         Task<(bool Success, string? Token, string? Error)> LoginAsync(LoginDto dto);
+        Task<(bool Success, string? Token, string? Error)> RefreshAsync(string token);
     }
 
     public class AuthService : IAuthService
@@ -48,6 +49,46 @@ namespace Projekt_dotnet.Services
 
             var token = GenerateJwtToken(user);
             return (true, token, null);
+        }
+
+        public async Task<(bool Success, string? Token, string? Error)> RefreshAsync(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                ValidateIssuer = true,
+                ValidIssuer = _configuration["Jwt:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = _configuration["Jwt:Audience"],
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero // nie akceptuj wygasłych tokenów
+            };
+
+            try
+            {
+                var principal = tokenHandler.ValidateToken(token, validationParameters, out _);
+                var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrEmpty(userId))
+                    return (false, null, "Invalid token");
+
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                    return (false, null, "User not found");
+
+                var newToken = GenerateJwtToken(user);
+                return (true, newToken, null);
+            }
+            catch (SecurityTokenExpiredException)
+            {
+                return (false, null, "Token expired");
+            }
+            catch (Exception)
+            {
+                return (false, null, "Invalid token");
+            }
         }
 
         private string GenerateJwtToken(IdentityUser user)

@@ -6,7 +6,7 @@
       <RouterLink to="/songs/my" class="item" exact-active-class="active">Moje Utwory</RouterLink>
       <RouterLink to="/playlists" class="item" exact-active-class="active">Playlisty</RouterLink>
       <RouterLink to="/albums" class="item" exact-active-class="active">Albumy</RouterLink>
-      <RouterLink to="/" class="item" exact-active-class="active">Utwory</RouterLink>
+      <RouterLink to="/songs" class="item" exact-active-class="active">Utwory</RouterLink>
     </nav>
   </aside>
 </template>

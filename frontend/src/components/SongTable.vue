@@ -2,10 +2,19 @@
   <div>
     <div v-if="selectable" class="actions">
       <button 
+        v-if="showAlbumAction"
         :disabled="selectedSongs.length === 0" 
         @click="$emit('add-to-album', selectedSongs)"
       >
         Dodaj/Przenieś do albumu ({{ selectedSongs.length }})
+      </button>
+      <button 
+        v-if="showPlaylistAction"
+        class="secondary"
+        :disabled="selectedSongs.length === 0" 
+        @click="$emit('add-to-playlist', selectedSongs)"
+      >
+        Dodaj do playlisty ({{ selectedSongs.length }})
       </button>
     </div>
     
@@ -60,16 +69,21 @@ interface Props {
   songs: Song[]
   selectable?: boolean
   showDelete?: boolean
+  showAlbumAction?: boolean
+  showPlaylistAction?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   selectable: false,
-  showDelete: false
+  showDelete: false,
+  showAlbumAction: false,
+  showPlaylistAction: false
 })
 
 defineEmits<{
   delete: [id: number | string]
   'add-to-album': [songIds: (string | number)[]]
+  'add-to-playlist': [songIds: (string | number)[]]
 }>()
 
 const selectedSongs = ref<(string | number)[]>([])
@@ -118,6 +132,13 @@ function toggleAll(e: Event) {
   padding: 0.4rem 0.8rem; 
   border-radius: 4px; 
   cursor: pointer; 
+}
+.actions button.secondary {
+  background: #3b82f6;
+}
+.actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .btn-delete { 
   background: #c00; 

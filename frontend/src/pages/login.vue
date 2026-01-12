@@ -73,6 +73,7 @@ async function handleLogin() {
     // Zapisz nowy token
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('userEmail', response.data.email);
+    window.dispatchEvent(new Event('token-changed'))
     
     console.log('=== SAVED TOKEN ===', localStorage.getItem('token'));
     

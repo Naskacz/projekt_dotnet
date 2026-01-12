@@ -10,8 +10,10 @@ namespace Projekt_dotnet.Services
     {
         Task<(bool Success, Song? Song, string? Error)> UploadSongAsync(CreateSongDto dto, string userId, SupabaseService supabaseService);
         Task<List<dynamic>> GetAllSongsAsync();
+        Task<SongDetailDto?> GetSongDetailByIdAsync(int id);
         Task<List<Song>> GetSongsByUserAsync(string userId);
         Task<(bool Success, string? Error)> AddSongToAlbumAsync(int songId, int albumId, string userId);
+        Task<(bool Success, string? Error)> DeleteSongAsync(int songId, string userId, SupabaseService supabaseService);
     }
 
     public class SongService : ISongService
@@ -113,6 +115,52 @@ namespace Projekt_dotnet.Services
             {
                 return (false, ex.InnerException?.Message ?? ex.Message);
             }
+        }
+        public async Task<(bool Success, string? Error)> DeleteSongAsync(int songId, string userId, SupabaseService supabaseService)
+        {
+            var song = await _dbContext.Songs.FindAsync(songId);
+            if (song == null)
+                return (false, "Song not found");
+
+            if (song.CreatedById != userId)
+                return (false, "You do not have permission to delete this song");
+
+            using var transaction = await _dbContext.Database.BeginTransactionAsync();
+            try
+            {
+                _dbContext.Songs.Remove(song);
+                await _dbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return (true, null);
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return (false, ex.InnerException?.Message ?? ex.Message);
+            }
+        }
+        public async Task<SongDetailDto?> GetSongDetailByIdAsync(int id)
+        {
+            return await _dbContext.Songs
+                .Where(s => s.Id == id)
+                .Select(s => new SongDetailDto
+                {
+                    Id = s.Id,
+                    Title = s.Title,
+                    Artist = s.Artist,
+                    Year = s.Year,
+                    Genre = s.Genre,
+                    FileUrl = s.FileUrl,
+                    Album = s.Album == null ? null : new AlbumShortDto
+                    {
+                        Id = s.Album.Id,
+                        Name = s.Album.Name,
+                        Artist = s.Album.Artist,
+                        ReleaseYear = s.Album.ReleaseYear,
+                        CoverUrl = s.Album.CoverUrl
+                    }
+                })
+                .FirstOrDefaultAsync();
         }
     }
 }

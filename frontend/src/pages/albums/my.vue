@@ -1,7 +1,12 @@
 <template>
   <section class="albums">
     <h2>Moje Albumy</h2>
-    <AlbumList v-if="albums.length" :albums="albums"/>
+    <AlbumList 
+    v-if="albums.length" 
+    :albums="albums"
+    show-actions
+    @delete="handleDelete"
+    />
     <p v-else>Brak albumów.</p>
   </section>
 </template>
@@ -15,6 +20,15 @@ const { albums, loading, error, fetch, delete: deleteAlbum } = useMyAlbums()
 
 onMounted(fetch)
 
+async function handleDelete(id) {
+  if(!confirm('Czy na pewno chcesz usunąć ten album?')) return
+  try{
+    await deleteAlbum(id)
+    await fetch()
+  } catch (error) {
+    console.error('Error deleting album:', error);
+  }
+}
 </script>
 
 <style scoped>

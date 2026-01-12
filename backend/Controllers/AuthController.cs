@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Projekt_dotnet.Models.DTOs;
 using Projekt_dotnet.Services;
@@ -33,5 +34,24 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = error });
 
         return Ok(new { token, email = dto.Email });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh()
+    {
+        var authHeader = Request.Headers["Authorization"].FirstOrDefault();
+        var token = authHeader?.StartsWith("Bearer ") == true
+            ? authHeader["Bearer ".Length..]
+            : null;
+
+        if (string.IsNullOrWhiteSpace(token))
+            return Unauthorized(new { message = "Missing token" });
+
+        var (success, newToken, error) = await _authService.RefreshAsync(token);
+
+        if (!success || newToken == null)
+            return Unauthorized(new { message = error ?? "Invalid token" });
+
+        return Ok(new { token = newToken });
     }
 }

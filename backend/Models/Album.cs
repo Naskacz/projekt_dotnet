@@ -12,6 +12,6 @@ namespace Projekt_dotnet.Models
         public string? CoverUrl { get; set; }
         public required string CreatedById { get; set; } = null!;
         public IdentityUser? CreatedBy { get; set; }
-        public List<Song> Songs { get; set; } = new List<Song>();
+        public ICollection<Song> Songs { get; set; } = new List<Song>();
     }
 }

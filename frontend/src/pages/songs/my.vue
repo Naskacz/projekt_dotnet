@@ -6,18 +6,30 @@
       :songs="songs"
       selectable
       show-delete
-      @add-to-album="openModal"
+      show-playlist-action
+      show-album-action
+      @add-to-album="openAlbumModal"
+      @add-to-playlist="openPlaylistModal"
       @delete="handleDelete"
     />
     <p v-else>Brak utworów.</p>
 
     <AddToAlbumModal
-      :show="showModal"
+      :show="showAlbumModal"
       :albums="albums"
       :loading="addingToAlbum"
-      :error="modalError"
-      @close="closeModal"
+      :error="albumModalError"
+      @close="closeAlbumModal"
       @add="handleAddToAlbum"
+    />
+
+    <AddToPlaylistModal
+      :show="showPlaylistModal"
+      :playlists="playlists"
+      :loading="addingToPlaylist"
+      :error="playlistModalError"
+      @close="closePlaylistModal"
+      @add="handleAddToPlaylist"
     />
   </section>
 </template>
@@ -26,50 +38,91 @@
 import { onMounted, ref } from 'vue'
 import { useMySongs } from '@/composables/api/useSongs'
 import { useMyAlbums } from '@/composables/api/useAlbums'
+import { usePlaylists } from '@/composables/api/usePlaylists'
 import SongTable from '@/components/SongTable.vue'
 import AddToAlbumModal from '@/components/AddToAlbumModal.vue'
+import AddToPlaylistModal from '@/components/AddToPlaylistModal.vue'
 
 const { songs, loading, error, fetch, delete: deleteSong, addToAlbum } = useMySongs()
 const { albums, fetch: fetchAlbums } = useMyAlbums()
+const { playlists, fetchAll: fetchPlaylists, addSong: addSongToPlaylist } = usePlaylists()
 
-const showModal = ref(false)
+// Album modal
+const showAlbumModal = ref(false)
 const selectedSongIds = ref<number[]>([])
 const addingToAlbum = ref(false)
-const modalError = ref('')
+const albumModalError = ref('')
+
+// Playlist modal
+const showPlaylistModal = ref(false)
+const addingToPlaylist = ref(false)
+const playlistModalError = ref('')
 
 onMounted(async () => {
   await fetch()
   await fetchAlbums()
+  await fetchPlaylists()
 })
 
-function openModal(songIds: (string | number)[]) {
+// Album handlers
+function openAlbumModal(songIds: (string | number)[]) {
   selectedSongIds.value = songIds.map(id => typeof id === 'string' ? parseInt(id, 10) : id)
-  showModal.value = true
-  modalError.value = ''
+  showAlbumModal.value = true
+  albumModalError.value = ''
 }
 
-function closeModal() {
-  showModal.value = false
+function closeAlbumModal() {
+  showAlbumModal.value = false
   selectedSongIds.value = []
-  modalError.value = ''
+  albumModalError.value = ''
 }
 
 async function handleAddToAlbum(albumId: number) {
   addingToAlbum.value = true
-  modalError.value = ''
+  albumModalError.value = ''
   
   try {
     for (const songId of selectedSongIds.value) {
       await addToAlbum(songId, albumId)
     }
-    closeModal()
+    closeAlbumModal()
   } catch (e: any) {
-    modalError.value = e.message || 'Błąd dodawania do albumu'
+    albumModalError.value = e.message || 'Błąd dodawania do albumu'
   } finally {
     addingToAlbum.value = false
   }
 }
 
+// Playlist handlers
+function openPlaylistModal(songIds: (string | number)[]) {
+  selectedSongIds.value = songIds.map(id => typeof id === 'string' ? parseInt(id, 10) : id)
+  showPlaylistModal.value = true
+  playlistModalError.value = ''
+}
+
+function closePlaylistModal() {
+  showPlaylistModal.value = false
+  selectedSongIds.value = []
+  playlistModalError.value = ''
+}
+
+async function handleAddToPlaylist(playlistId: number) {
+  addingToPlaylist.value = true
+  playlistModalError.value = ''
+  
+  try {
+    for (const songId of selectedSongIds.value) {
+      await addSongToPlaylist(playlistId, songId)
+    }
+    closePlaylistModal()
+  } catch (e: any) {
+    playlistModalError.value = e.message || 'Błąd dodawania do playlisty'
+  } finally {
+    addingToPlaylist.value = false
+  }
+}
+
+// Delete handler
 async function handleDelete(id: number | string) {
   if (confirm('Czy na pewno chcesz usunąć ten utwór?')) {
     try {

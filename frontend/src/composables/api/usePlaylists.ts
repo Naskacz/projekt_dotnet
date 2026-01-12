@@ -7,6 +7,26 @@ export function usePlaylists() {
   const loading = ref(false)
   const error = ref('')
 
+  function authHeader() {
+    const token = localStorage.getItem('token') || ''
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
+  async function fetchMy() {
+    loading.value = true
+    error.value = ''
+    try {
+      const res = await axios.get('/api/playlists/my', {
+        headers: authHeader()
+      })
+      playlists.value = res.data
+    } catch (e: any) {
+      error.value = e.response?.data?.message || 'Błąd pobierania playlist'
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function fetchAll() {
     loading.value = true
     error.value = ''
@@ -24,8 +44,10 @@ export function usePlaylists() {
     loading.value = true
     error.value = ''
     try {
-      const res = await axios.get(`/api/playlists/${id}`)
-      return res.data
+      const res = await axios.get(`/api/playlists/${id}`, {
+        headers: authHeader()
+      })
+      return res.data as Playlist
     } catch (e: any) {
       error.value = e.response?.data?.message || 'Błąd pobierania playlisty'
       throw e
@@ -34,46 +56,56 @@ export function usePlaylists() {
     }
   }
 
-  return { playlists, loading, error, fetchAll, fetchOne }
-}
-
-export function useMyPlaylists() {
-  const playlists = ref<Playlist[]>([])
-  const loading = ref(false)
-  const error = ref('')
-
-  async function fetch() {
-    loading.value = true
+  async function create(name: string, isPublic = false) {
     error.value = ''
     try {
-      const res = await axios.get('/api/playlists/my')
-      playlists.value = res.data
+      const res = await axios.post('/api/playlists', { name, isPublic }, {
+        headers: authHeader()
+      })
+      playlists.value.unshift(res.data)
+      return res.data as Playlist
     } catch (e: any) {
-      error.value = e.response?.data?.message || 'Błąd pobierania twoich playlist'
-    } finally {
-      loading.value = false
-    }
-  }
-
-  async function create(data: { name: string; description?: string }) {
-    try {
-      const res = await axios.post('/api/playlists/create', data)
-      return res.data
-    } catch (e: any) {
-      error.value = e.response?.data?.error || 'Błąd tworzenia playlisty'
+      error.value = e.response?.data?.message || 'Błąd tworzenia playlisty'
       throw e
     }
   }
 
   async function delete_(id: number | string) {
+    error.value = ''
     try {
-      await axios.delete(`/api/playlists/${id}`)
+      await axios.delete(`/api/playlists/${id}`, {
+        headers: authHeader()
+      })
       playlists.value = playlists.value.filter(p => p.id !== id)
     } catch (e: any) {
-      error.value = e.response?.data?.error || 'Błąd usuwania playlisty'
+      error.value = e.response?.data?.message || 'Błąd usuwania playlisty'
       throw e
     }
   }
 
-  return { playlists, loading, error, fetch, create, delete: delete_ }
+  async function addSong(playlistId: number | string, songId: number | string) {
+    error.value = ''
+    try {
+      await axios.post(`/api/playlists/${playlistId}/songs`, { songId }, {
+        headers: authHeader()
+      })
+    } catch (e: any) {
+      error.value = e.response?.data?.message || 'Błąd dodawania utworu do playlisty'
+      throw e
+    }
+  }
+
+  async function removeSong(playlistId: number | string, songId: number | string) {
+    error.value = ''
+    try {
+      await axios.delete(`/api/playlists/${playlistId}/songs/${songId}`, {
+        headers: authHeader()
+      })
+    } catch (e: any) {
+      error.value = e.response?.data?.message || 'Błąd usuwania utworu z playlisty'
+      throw e
+    }
+  }
+
+  return { playlists, loading, error, fetchAll, fetchMy, fetchOne, create, delete: delete_, addSong, removeSong }
 }

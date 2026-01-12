@@ -28,8 +28,6 @@
 </template>
 
 <script setup>
-import SongTable from './SongTable.vue'
-
 defineProps({
   albums: {
     type: Array,

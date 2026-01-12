@@ -20,6 +20,8 @@ export interface Playlist {
   id: number | string
   name: string
   description?: string
+  isPublic?: boolean
+  createdAt?: string
   createdBy?: string
   songs?: Song[]
 }

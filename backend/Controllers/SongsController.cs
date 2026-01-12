@@ -38,6 +38,15 @@ namespace Projekt_dotnet.Controllers
 
             return Ok(new { uploadedUrl = song.FileUrl, id = song.Id });
         }
+        [HttpGet("{songId}")]
+        public async Task<IActionResult> GetSong(int songId)
+        {
+            var song = await _songService.GetSongDetailByIdAsync(songId);
+            if (song == null)
+                return NotFound();
+
+            return Ok(song);
+        }
         [Authorize]
         [HttpGet("my")]
         public async Task<IActionResult> GetMySongs()
@@ -66,6 +75,18 @@ namespace Projekt_dotnet.Controllers
                 return BadRequest(new { error });
     
             return Ok(new { message = "Utwór dodany do albumu" });
+        }
+        [Authorize]
+        [HttpDelete("{songId}")]
+        public async Task<IActionResult> DeleteSong(int songId)
+        {
+            var userId = GetUserId();
+            var (success, error) = await _songService.DeleteSongAsync(songId, userId, _supabaseService);
+
+            if (!success)
+                return BadRequest(new { error });
+
+            return Ok(new { message = "Utwór usunięty" });
         }
     }
 }

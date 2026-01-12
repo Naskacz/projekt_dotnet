@@ -75,6 +75,27 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/playlists/': RouteRecordInfo<
+      '/playlists/',
+      '/playlists',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/playlists/[id]': RouteRecordInfo<
+      '/playlists/[id]',
+      '/playlists/:id',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
+      | never
+    >,
+    '/playlists/my': RouteRecordInfo<
+      '/playlists/my',
+      '/playlists/my',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/register': RouteRecordInfo<
       '/register',
       '/register',
@@ -87,6 +108,13 @@ declare module 'vue-router/auto-routes' {
       '/songs',
       Record<never, never>,
       Record<never, never>,
+      | never
+    >,
+    '/songs/[id]': RouteRecordInfo<
+      '/songs/[id]',
+      '/songs/:id',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
       | never
     >,
     '/songs/my': RouteRecordInfo<
@@ -162,6 +190,24 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
+    'src/pages/playlists/index.vue': {
+      routes:
+        | '/playlists/'
+      views:
+        | never
+    }
+    'src/pages/playlists/[id].vue': {
+      routes:
+        | '/playlists/[id]'
+      views:
+        | never
+    }
+    'src/pages/playlists/my.vue': {
+      routes:
+        | '/playlists/my'
+      views:
+        | never
+    }
     'src/pages/register.vue': {
       routes:
         | '/register'
@@ -171,6 +217,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/songs/index.vue': {
       routes:
         | '/songs/'
+      views:
+        | never
+    }
+    'src/pages/songs/[id].vue': {
+      routes:
+        | '/songs/[id]'
       views:
         | never
     }
