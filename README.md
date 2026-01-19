@@ -47,7 +47,7 @@ Aby zatrzymać aplikację w dockerze należy wpisać:
   - Controllers/ – API (Auth, Songs, Albums, Playlists, Search)
   - Services/ – logika domenowa/biznesowa (AuthService, SongService, AlbumService, PlaylistService, SupabaseService)
   - Data/ApplicationDbContext.cs – kontekst bazy danych (EF Core), konfiguracja encji i relacji
-  - Models/ i Models/DTOs – encje bazy
+  - Models/ – encje bazy
     - DTOs - obiekty transferowe dla API
   - Migrations/ – migracje EF Core
   - Dockerfile - obraz docker backend
