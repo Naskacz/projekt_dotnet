@@ -10,11 +10,8 @@ Powinny wystartować 4 kontenery. Powinniśmy mieć dostęp do:
 Serwer powinien słuchać na localhost:8080, a baza danych localhost:5432.
 
 W pg admin:
-
-login: admin@admin.com
-
-password: admin
-
+-login: admin@admin.com
+-password: admin
 
 Jeżeli chcemy w pgadminie dodać naszą bazę danych (opcjonalne), klikamy Add New Server:
 - Name: [dowolna nazwa]
@@ -23,7 +20,6 @@ Jeżeli chcemy w pgadminie dodać naszą bazę danych (opcjonalne), klikamy Add 
 - Maintenance Database: MusicDB (może zostać postgres)
 - Username: postgres
 - Password: postgres
-
 
 Aby zaaplikować migracje z plików do naszej bazy danych (jeżeli aplikacja sama tego nie zrobiła):
 - docker compose exec -it dotnet_music_app bash
