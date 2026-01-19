@@ -1,3 +1,4 @@
+## Sposób uruchomienia projektu
 Projekt jest budowany przez polecenie (wymaga zainstalowanego dockera):
 - docker compose up --build -d      <-- flaga '--build': buduje projekt, głównie zalecany przy pierwszym odpaleniu projektu, później zazwyczaj można pomijać; '-d': powoduje, że w konsoli nie zasypie nas logami z kontenerów
 
@@ -38,3 +39,19 @@ Aby zaaplikować migracje z plików do naszej bazy danych (jeżeli aplikacja sam
 
 Aby zatrzymać aplikację w dockerze należy wpisać:
 - docker compose down (-v)      <-- dodanie '-v' jest opcjonalne, skutkuje m.in. skasowaniem danych przed ponownym uruchomieniem aplikacji w dockerze
+
+
+## Struktura projektu
+- backend/  
+  - Program.cs – konfiguracja aplikacji
+  - Controllers/ – API (Auth, Songs, Albums, Playlists, Search)
+  - Services/ – logika domenowa/biznesowa (AuthService, SongService, AlbumService, PlaylistService, SupabaseService)
+  - Data/ApplicationDbContext.cs – kontekst bazy danych (EF Core), konfiguracja encji i relacji
+  - Models/ i Models/DTOs – encje bazy
+    - DTOs - obiekty transferowe dla API
+  - Migrations/ – migracje EF Core
+  - Dockerfile - obraz docker backend
+- frontend/  
+  - Aplikacja Vue (dev server na porcie 5173)
+  - Dockerfile - obraz docker frontend
+- docker-compose.yml – usługi: app (backend), frontend, db (Postgres + volume postgres_data), pgadmin
