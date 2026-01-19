@@ -85,6 +85,11 @@ builder.Services
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    dbContext.Database.Migrate(); // Automatycznie aplikuje migracje
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
