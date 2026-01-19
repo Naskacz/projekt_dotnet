@@ -27,7 +27,13 @@ namespace Projekt_dotnet.Services
 
         public async Task<(bool Success, string? Token, string? Error)> RegisterAsync(RegisterDto dto)
         {
-            var user = new IdentityUser { UserName = dto.Email, Email = dto.Email };
+            var userExists = await _userManager.FindByEmailAsync(dto.Email);
+            if (userExists != null)
+            {
+                return (false, null, "User already exists");
+            }
+            
+            var user = new IdentityUser { UserName = dto.Username, Email = dto.Email };
             var result = await _userManager.CreateAsync(user, dto.Password);
 
             if (!result.Succeeded)
@@ -63,7 +69,7 @@ namespace Projekt_dotnet.Services
                 ValidateAudience = true,
                 ValidAudience = _configuration["Jwt:Audience"],
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero // nie akceptuj wygasłych tokenów
+                ClockSkew = TimeSpan.Zero
             };
 
             try
@@ -108,7 +114,7 @@ namespace Projekt_dotnet.Services
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(24),
+                expires: DateTime.Now.AddHours(_configuration.GetValue<double>("Jwt:ExpireHours")),
                 signingCredentials: creds
             );
 
