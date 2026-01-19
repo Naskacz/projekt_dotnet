@@ -63,7 +63,7 @@ async function handleDelete(id: number | string) {
 
 <style scoped>
 .playlists { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-.create { display: flex; gap: 0.5rem; align-items: center; margin-bottom: 1rem; }
+.create { display: flex; gap: 0.5rem;  margin-bottom: 1rem; }
 .create input[type="text"] { flex: 1; padding: 0.6rem 0.8rem; border: 1px solid #ddd; border-radius: 6px; }
 .create button { padding: 0.6rem 1rem; border: none; background: #2c3e50; color: #fff; border-radius: 6px; cursor: pointer; }
 .create .checkbox { display: flex; align-items: center; gap: 0.35rem; font-size: 0.9rem; color: #555; }

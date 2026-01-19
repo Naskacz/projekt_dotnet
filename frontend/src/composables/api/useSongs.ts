@@ -1,12 +1,12 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import type { Song } from '@/types'
+import { useRouter } from 'vue-router'
 
 export function useSongs() {
   const songs = ref<Song[]>([])
   const loading = ref(false)
   const error = ref('')
-
   async function fetchAll() {
     loading.value = true
     error.value = ''
@@ -41,6 +41,7 @@ export function useMySongs() {
   const songs = ref<Song[]>([])
   const loading = ref(false)
   const error = ref('')
+  const router = useRouter()
 
   async function fetch() {
     loading.value = true
@@ -68,6 +69,7 @@ export function useMySongs() {
         'Authorization': `Bearer ${token}`
       }
     })
+      await router.push('/songs/my')
       return res.data
     } catch (e: any) {
       error.value = e.response?.data?.error || 'Błąd tworzenia utworu'
