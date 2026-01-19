@@ -5,6 +5,7 @@ Powinny wystartować 4 kontenery. Powinniśmy mieć dostęp do:
 - PG admina: http://localhost:5050/browser
 - Frontend w vue: http://localhost:5173
 - Swagger: http://localhost:8080/swagger
+
 Serwer powinien słuchać na localhost:8080, a baza danych localhost:5432.
 
 W pg admin:
