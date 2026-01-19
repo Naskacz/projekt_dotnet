@@ -16,12 +16,20 @@ password: admin
 
 
 Jeżeli chcemy w pgadminie dodać naszą bazę danych (opcjonalne), klikamy Add New Server:
+
 Name: [dowolna nazwa]
+
 Host Name: db
+
 Port: 5432
+
 Maintenance Database: MusicDB (może zostać postgres)
+
 Username: postgres
+
 Password: postgres
+
+
 
 Aby zaaplikować migracje z plików do naszej bazy danych (jeżeli aplikacja sama tego nie zrobiła):
 - docker compose exec -it dotnet_music_app bash
