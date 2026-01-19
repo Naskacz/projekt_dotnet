@@ -17,17 +17,17 @@ password: admin
 
 Jeżeli chcemy w pgadminie dodać naszą bazę danych (opcjonalne), klikamy Add New Server:
 
-Name: [dowolna nazwa]
+- Name: [dowolna nazwa]
 
-Host Name: db
+- Host Name: db
 
-Port: 5432
+- Port: 5432
 
-Maintenance Database: MusicDB (może zostać postgres)
+- Maintenance Database: MusicDB (może zostać postgres)
 
-Username: postgres
+- Username: postgres
 
-Password: postgres
+- Password: postgres
 
 
 
