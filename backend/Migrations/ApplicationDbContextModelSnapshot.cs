@@ -228,7 +228,8 @@ namespace Projekt_dotnet.Migrations
 
                     b.Property<string>("Artist")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("CoverUrl")
                         .HasColumnType("text");
@@ -239,7 +240,8 @@ namespace Projekt_dotnet.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("ReleaseYear")
                         .HasColumnType("integer");
@@ -267,7 +269,8 @@ namespace Projekt_dotnet.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -314,7 +317,8 @@ namespace Projekt_dotnet.Migrations
 
                     b.Property<string>("Artist")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("CreatedById")
                         .IsRequired()
@@ -322,18 +326,21 @@ namespace Projekt_dotnet.Migrations
 
                     b.Property<string>("FileName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<string>("FileUrl")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Genre")
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<int>("Year")
                         .HasColumnType("integer");
